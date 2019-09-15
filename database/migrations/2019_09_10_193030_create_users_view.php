@@ -38,6 +38,8 @@ class CreateUsersView extends Migration
 create view if not exists `users_view` as
 select
 u.id as `user_id`,
+e.id as `education_id`,
+c.id as `city_id`,
 u.name as `user_name`,
 e.name as `user_education`,
 c.name as `user_city`
