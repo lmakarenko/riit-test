@@ -19,6 +19,13 @@ Route::get('/', function () {
     'index', 'update'
 ]);*/
 Route::get('cities', 'CityController@index');
+Route::get('cities/store-data', 'CityController@storeData');
 Route::get('educations', 'EducationController@index');
 Route::get('users', 'UserController@index');
-Route::get('users/update/{id}', 'UserController@update');
+//Route::get('users/update/{id}', 'UserController@update');
+
+//Route::post('users/update', 'UserController@update');
+Route::put('users/update/{id}', 'UserController@update');
+//Route::group(['middleware' => 'api'], function () {
+    Route::get('user-search', 'UserSearchController@filter');
+//});

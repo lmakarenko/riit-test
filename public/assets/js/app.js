@@ -12,6 +12,22 @@ Ext.require([
     'Ext.ux.ajax.SimManager'
 ]);
 
+/**
+* Reads CSRF token from COOKIES
+*/
+Ext.require(["Ext.util.Cookies", "Ext.Ajax"], function(){
+    // Add csrf token to every ajax request
+    var token = Ext.util.Cookies.get('XSRF-TOKEN');
+    if(!token){
+        Ext.Error.raise("Missing csrftoken cookie");
+    } else {
+        Ext.Ajax.defaultHeaders = Ext.apply(Ext.Ajax.defaultHeaders || {}, {
+            'X-XSRF-TOKEN': token
+        });
+        //Ext.util.Cookies.set('X-XSRF-TOKEN', token);
+    }
+});
+
 /* Models */
 
 Ext.define('City', {
@@ -46,9 +62,9 @@ Ext.define('User', {
     }, {
         name: 'user_name'
     }, {
-        name: 'user_education',
+        name: 'user_educations',
     }, {
-        name: 'user_city',
+        name: 'user_cities',
     }]
 });
 
@@ -56,29 +72,8 @@ Ext.onReady(function () {
 
     var url = '/users';
 
-    var userStore = Ext.create('Ext.data.JsonStore', {
-        // store configs
-        autoDestroy: true,
-        model: 'User',
-        proxy: {
-            type: 'ajax',
-            url: url,
-            reader: {
-                type: 'json',
-                root: 'data',
-                idProperty: 'user_id',
-                totalProperty: 'total'
-            }
-        },
-        remoteSort: false,
-        sorters: [{
-            property: 'user_name',
-            direction: 'ASC'
-        }],
-        pageSize: 50
-    });
-
     var cityStore = Ext.create('Ext.data.Store', {
+        autoload: true,
         autoDestroy: true,
         model: 'City',
         proxy: {
@@ -97,10 +92,38 @@ Ext.onReady(function () {
         store: cityStore,
         valueField: 'id',
         displayField: 'name',
+        listeners: {
+            'beforeselect': function(combo, rec, indx) {
+                let selModel = grid.getSelectionModel();
+                let rowData = selModel.getSelection()[0].data;
+                let newCityId = rec.data.id;
+                let userId = rowData.user_id;
+                let params = {
+                    'city_id': newCityId
+                };
+                Ext.Ajax.request({
+                    url: 'users/update/' + userId,
+                    method: 'PUT',
+                    params: params,
+                    success: function(response, opts) {
+                        var obj = Ext.decode(response.responseText);
+                        console.dir(obj);
+                        combo.collapse();
+                        //selModel.clearSelections();
+                        userStore.load();
+                    },
+                    failure: function(response, opts) {
+                        console.log('server-side failure with status code ' + response.status);
+                    }
+                });
+                return false;
+            },
+        },
     });
 
     //var educationStore = new Ext.data.SimpleStore({
     var educationStore = Ext.create('Ext.data.Store', {
+        autoload: true,
         autoDestroy: true,
         model: 'Education',
         proxy: {
@@ -119,6 +142,82 @@ Ext.onReady(function () {
         store: educationStore,
         valueField: 'id',
         displayField: 'name',
+        listeners: {
+            'beforeselect': function(combo, rec, indx) {
+                let selModel = grid.getSelectionModel();
+                let rowData = selModel.getSelection()[0].data;
+                let newEducationId = rec.data.id;
+                let userId = rowData.user_id;
+                let params = {
+                    'education_id': newEducationId
+                };
+                Ext.Ajax.request({
+                    url: 'users/update/' + userId,
+                    method: 'PUT',
+                    params: params,
+                    success: function(response, opts) {
+                        var obj = Ext.decode(response.responseText);
+                        console.dir(obj);
+                        combo.collapse();
+                        userStore.load();
+                    },
+                    failure: function(response, opts) {
+                        console.log('server-side failure with status code ' + response.status);
+                    }
+                });
+                return false;
+            },
+        },
+    });
+
+    var userStore = Ext.create('Ext.data.JsonStore', {
+        // store configs
+        autoload: true,
+        autoDestroy: true,
+        autoSync: true,
+        model: 'User',
+        proxy: {
+            type: 'rest',
+            url: url,
+            actionMethods: {
+                read: 'GET',
+                update: 'PUT',
+                /*create: 'POST',
+                destroy: 'DELETE'*/
+            },
+            api: {
+                read: url,
+                update: url + '/update',
+            },
+            reader: {
+                type: 'json',
+                root: 'data',
+                totalProperty: 'total',
+                idProperty: 'user_id',
+            },
+            writer: {
+                type: 'json',
+                writeAllFields: true,
+                encode: true,
+                root: 'data',
+            },
+        },
+        remoteSort: false,
+        sorters: [{
+            property: 'user_name',
+            direction: 'ASC'
+        }],
+        pageSize: 50,
+        /*listeners: {
+            'datachanged': function(e) {
+                console.log(e);
+                Ext.MessageBox.alert('Alert box', 'datachanged event is called');
+            },
+            'updated': function(e) {
+                console.log(e);
+                Ext.MessageBox.alert('Alert box', 'updated event is called');
+            },
+        },*/
     });
 
     // configure whether filter query is encoded or not (initially)
@@ -142,14 +241,10 @@ Ext.onReady(function () {
             {
                 type: 'list',
                 dataIndex: 'education_id',
-                labelField: 'name',
-                store: educationStore,
             },
             {
                 type: 'list',
                 dataIndex: 'city_id',
-                labelField: 'name',
-                store: cityStore,
             },
         ],
     };
@@ -176,27 +271,16 @@ Ext.onReady(function () {
             },
             {
                 header: 'Образование',
-                dataIndex: 'education_id',
-                renderer: function(id) {
-                    var idx = educationStore.find('id', id);
-                    var rec = educationStore.getAt(idx);
-                    return rec.get('name');
-                },
+                dataIndex: 'user_educations',
                 editor: educationCombo,
                 flex: 1,
             },
             {
                 header: 'Город',
-                dataIndex: 'city_id',
-                renderer: function(id) {
-                    var idx = cityStore.find('id', id);
-                    var rec = cityStore.getAt(idx);
-                    return rec.get('name');
-                },
+                dataIndex: 'user_cities',
                 editor: cityCombo,
                 flex: 1,
-                //editable: false,
-            }
+            },
         ];
 
         return columns.slice(start || 0, finish);
@@ -204,7 +288,7 @@ Ext.onReady(function () {
 
     // Main grid
     var grid = Ext.create('Ext.grid.Panel', {
-        title: 'Пользователи',
+        title: 'Данные пользователей: имя, образование (1 или несколько), город (1 или несколько)',
         store: userStore,
         columns: create_columns(4),
         selType: 'cellmodel',
@@ -216,7 +300,6 @@ Ext.onReady(function () {
         //height: 300,
         //width: 600,
         renderTo: Ext.getBody(),
-        //
         loadMask: true,
         features: [filters],
         dockedItems: [Ext.create('Ext.toolbar.Paging', {
@@ -224,12 +307,18 @@ Ext.onReady(function () {
             store: userStore,
         })],
         emptyText: 'No Matching Records',
+        listeners: {
+            edit: function(editor, e) {
+                console.log('Edit event fired');
+                //e.record.commit();
+            }
+        }
     });
 
     // add some buttons to bottom toolbar just for demonstration purposes
     grid.child('pagingtoolbar').add([
         '->',
-        {
+        /*{
             text: 'Encode: ' + (encode ? 'On' : 'Off'),
             tooltip: 'Toggle Filter encoding on/off',
             enableToggle: true,
@@ -240,8 +329,15 @@ Ext.onReady(function () {
                 grid.filters.reload();
                 button.setText(text);
             }
-        },
-        {
+        },*/
+        /*{
+            text: 'Save changes',
+            tooltip: 'Save changes to server',
+            handler: function(button, state) {
+                //
+            },
+        },*/
+        /*{
             text: 'Local Filtering: ' + (local ? 'On' : 'Off'),
             tooltip: 'Toggle Filtering between remote/local',
             enableToggle: true,
@@ -261,29 +357,20 @@ Ext.onReady(function () {
                 button.setText(text);
                 store.load();
             }
-        },
-        {
-            text: 'All Filter Data',
+        },*/
+        /*{
+            text: 'Показать данные фильтра',
             tooltip: 'Get Filter Data for Grid',
             handler: function () {
                 var data = Ext.encode(grid.filters.getFilterData());
                 Ext.Msg.alert('All Filter Data',data);
             }
-        },{
-            text: 'Clear Filter Data',
+        },*/{
+            text: 'Очистить данные фильтра',
             handler: function () {
                 grid.filters.clearFilters();
             }
-        },/*{
-            text: 'Add Columns',
-            handler: function () {
-                if (grid.headerCt.items.length < 6) {
-                    grid.headerCt.add(createColumns(6, 4));
-                    grid.view.refresh();
-                    this.disable();
-                }
-            }
-        }*/
+        },
     ]);
 
     var win = Ext.create('Ext.Window', {

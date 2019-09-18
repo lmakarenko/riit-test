@@ -13,7 +13,7 @@ class EducationTableSeeder extends Seeder
     {
         DB::table('education')->insert([
             ['name' => 'Среднее'],
-            ['name' => 'Среднее профессиональное образование'],
+            ['name' => 'Среднее профессиональное'],
             ['name' => 'Бакалавриат'],
             ['name' => 'Магистратура'],
         ]);

@@ -35,20 +35,37 @@ class CreateUsersView extends Migration
     protected function createView()
     {
         return <<<SQL
-create view if not exists `users_view` as
+CREATE VIEW if NOT EXISTS `users_view` as
+SELECT
+t.user_id as user_id,
+t.user_name as user_name,
+group_concat(t.city_name) user_cities,
+group_concat(t.education_name) user_educations
+FROM
+(
 select
-u.id as `user_id`,
-e.id as `education_id`,
-c.id as `city_id`,
-u.name as `user_name`,
-e.name as `user_education`,
-c.name as `user_city`
-from
-`users` u
-join `user_education` ue on ue.user_id = u.id
-join `user_city` uc on uc.user_id = u.id
-join `city` c on c.id = uc.city_id
-join `education` e on e.id = ue.education_id;
+u.id as user_id,
+u.name as user_name,
+c.name as city_name,
+null as education_name
+FROM
+users u
+JOIN user_city uc on u.id = uc.user_id
+JOIN city c on c.id = uc.city_id
+
+UNION ALL
+
+select
+u.id as user_id,
+u.name as user_name,
+null as city_name,
+e.name as education_name
+FROM
+users u
+JOIN user_education ue on u.id = ue.user_id
+JOIN education e on e.id = ue.education_id
+) as t
+GROUP BY t.user_id;
 SQL;
     }
 

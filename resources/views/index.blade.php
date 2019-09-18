@@ -26,8 +26,6 @@
 
             <div class="content">
 
-                <h1>Работа с данными пользователей</h1>
-
                 <div id="grid-example" style="margin: 10px;"></div>
 
             </div>

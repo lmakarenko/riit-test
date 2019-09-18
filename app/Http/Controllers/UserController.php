@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
-use App\UsersView;
+use App\Models\User;
+use App\Models\UsersView;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;;
-use \Debugbar;
+use Illuminate\Support\Facades\DB;
+use Exception;
+use Debugbar;
 
 class UserController extends Controller
 {
@@ -71,31 +72,36 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         //
         $update_status = false;
-        $user = User::findOrFail($id);
         try {
+            $user = User::findOrFail($id);
             Debugbar::info("START UPDATE USER # {$id}");
             DB::beginTransaction();
-            if($request->post('name')) {
-                $user->name = $request->post('name');
+            if($request->has('name')) {
+                $user->name = $request->input('name');
                 $user->save();
+                Debugbar::info("NEW USER name = {$user->name}");
             }
-            if($request->post('cities_id')) {
-                $user->cities()->syncWithoutDetaching($request['cities_id']);
+            if($request->has('city_id')) {
+                $city_id = $request->input('city_id');
+                $user->cities()->syncWithoutDetaching($city_id);
+                Debugbar::info("NEW USER city_id = {$city_id}");
             }
-            if($request->post('educations_id')) {
-                $user->educations()->syncWithoutDetaching($request['educations_id']);
+            if($request->has('education_id')) {
+                $education_id = $request->input('education_id');
+                $user->educations()->syncWithoutDetaching($education_id);
+                Debugbar::info("NEW USER education_id = {$education_id}");
             }
             DB::commit();
             Debugbar::info("END UPDATE USER # {$id}");
             $update_status = true;
-        } catch(\Exception $e) {
+        } catch(Exception $e) {
             DB::rollback();
             Debugbar::error("ERROR UPDATING USER # {$id} : " . $e->getMessage());
             Debugbar::addThrowable($e);

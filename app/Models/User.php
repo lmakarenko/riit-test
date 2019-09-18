@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -50,7 +50,7 @@ class User extends Authenticatable
     public function cities()
     {
         return $this->belongsToMany(
-            'App\City',
+            'App\Models\City',
             'user_city',
             'user_id',
             'city_id'
@@ -63,7 +63,7 @@ class User extends Authenticatable
     public function educations()
     {
         return $this->belongsToMany(
-            'App\Education',
+            'App\Models\Education',
             'user_education',
             'user_id',
             'education_id'
