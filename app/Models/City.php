@@ -4,6 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class City
+ * Модель для работы со справочником городов
+ * @package App\Models
+ */
 class City extends Model
 {
     /**
@@ -20,5 +25,9 @@ class City extends Model
     protected $fillable = [
         'name',
     ];
+    /**
+     * Record timestamps
+     * @var bool
+     */
     public $timestamps = false;
 }

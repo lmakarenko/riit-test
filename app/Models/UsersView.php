@@ -7,6 +7,7 @@ use App\traits\ReadOnlyModelTrait;
 
 /**
  * Class UsersView
+ * Модель для работы с представлением (БД) users_view
  * Eloquent model for users_view
  * @package App
  */

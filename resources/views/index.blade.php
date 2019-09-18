@@ -11,13 +11,9 @@
 
         <!-- Styles -->
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/extjs/4.2.1/resources/css/ext-all.css" />
-        <!--<link rel="stylesheet" type="text/css" href="{{ asset('/assets/css/example.css') }}" />
-        <link rel="stylesheet" type="text/css" href="{{ asset('/assets/css/ux/grid/GridFilters.css') }}" />
-        <link rel="stylesheet" type="text/css" href="{{ asset('/assets/css/ux/grid/RangeMenu.css') }}" />-->
         <!-- ExtJS -->
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/extjs/4.2.1/ext-all.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/extjs/4.2.1/locale/ext-lang-ru.min.js"></script>
-        <!--<script type="text/javascript" src="{{ asset('/assets/js/extjs/grid-filtering/grid-filter-local.js') }}"></script>-->
         <script type="text/javascript" src="{{ asset('/assets/js/app.js') }}"></script>
 
     </head>

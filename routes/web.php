@@ -10,22 +10,29 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+/**
+ * Маршрут для индексной страницы
+ */
 Route::get('/', function () {
     return view('index');
 });
-// Маршруты для REST-контроллера пользователей
-/*Route::resource('user', 'UserController')->only([
-    'index', 'update'
-]);*/
+/**
+ * Маршрут для ресурса городов
+ */
 Route::get('cities', 'CityController@index');
-Route::get('cities/store-data', 'CityController@storeData');
+/**
+ * Маршрут для ресурса образования
+ */
 Route::get('educations', 'EducationController@index');
+/**
+ * Маршрут для ресурса пользователей
+ */
 Route::get('users', 'UserController@index');
-//Route::get('users/update/{id}', 'UserController@update');
-
-//Route::post('users/update', 'UserController@update');
+/**
+ * Маршрут для ресурса пользователей, обновление данных
+ */
 Route::put('users/update/{id}', 'UserController@update');
-//Route::group(['middleware' => 'api'], function () {
-    Route::get('user-search', 'UserSearchController@filter');
-//});
+/**
+ * Маршрут для ресурса пользователей, поиск (фильтрация) данных
+ */
+Route::get('user-search', 'UserSearchController@filter');

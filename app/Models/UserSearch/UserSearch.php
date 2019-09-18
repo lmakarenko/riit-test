@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\UsersView;
 
+/**
+ * Class UserSearch
+ * Модель для поиска (фильтрации) данных пользователей
+ * @package App\Models\UserSearch
+ */
 class UserSearch extends Model
 {
 

@@ -4,17 +4,15 @@ namespace App\Models\UserSearch\Filters;
 
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Class City
+ * Фильтр для поиска по городу
+ * @package App\Models\UserSearch\Filters
+ */
 class City implements FilterInterface
 {
-    /**
-     * Apply a given search value to the builder instance.
-     *
-     * @param Builder $builder
-     * @param mixed $value
-     * @return Builder $builder
-     */
     public static function apply(Builder $builder, $value)
     {
-        return $builder->where('user_city', 'LIKE', $value);
+        return $builder->where('user_cities', 'LIKE', '%' . $value . '%');
     }
 }

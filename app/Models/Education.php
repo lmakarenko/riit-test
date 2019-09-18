@@ -4,6 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class Education
+ * Модель для работы со справочником об образовании
+ * @package App\Models
+ */
 class Education extends Model
 {
     /**
@@ -20,5 +25,9 @@ class Education extends Model
     protected $fillable = [
         'name',
     ];
+    /**
+     * Record timestamps
+     * @var bool
+     */
     public $timestamps = false;
 }

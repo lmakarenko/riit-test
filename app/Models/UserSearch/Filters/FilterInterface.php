@@ -4,10 +4,15 @@ namespace App\Models\UserSearch\Filters;
 
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Interface FilterInterface
+ * Интерфейс для фильтров
+ * @package App\Models\UserSearch\Filters
+ */
 interface FilterInterface
 {
     /**
-     * Apply a given search value to the builder instance.
+     * Добавляет значение поиска к обьекту построителя запросов
      *
      * @param Builder $builder
      * @param mixed $value

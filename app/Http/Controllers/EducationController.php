@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Education;
 
+/**
+ * Class EducationController
+ * @package App\Http\Controllers
+ */
 class EducationController extends Controller
 {
     /**

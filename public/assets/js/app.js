@@ -121,7 +121,6 @@ Ext.onReady(function () {
         },
     });
 
-    //var educationStore = new Ext.data.SimpleStore({
     var educationStore = Ext.create('Ext.data.Store', {
         autoload: true,
         autoDestroy: true,
@@ -182,8 +181,6 @@ Ext.onReady(function () {
             actionMethods: {
                 read: 'GET',
                 update: 'PUT',
-                /*create: 'POST',
-                destroy: 'DELETE'*/
             },
             api: {
                 read: url,
@@ -208,16 +205,6 @@ Ext.onReady(function () {
             direction: 'ASC'
         }],
         pageSize: 50,
-        /*listeners: {
-            'datachanged': function(e) {
-                console.log(e);
-                Ext.MessageBox.alert('Alert box', 'datachanged event is called');
-            },
-            'updated': function(e) {
-                console.log(e);
-                Ext.MessageBox.alert('Alert box', 'updated event is called');
-            },
-        },*/
     });
 
     // configure whether filter query is encoded or not (initially)
@@ -297,8 +284,6 @@ Ext.onReady(function () {
                 clicksToEdit: 1
             })
         ],
-        //height: 300,
-        //width: 600,
         renderTo: Ext.getBody(),
         loadMask: true,
         features: [filters],
@@ -307,12 +292,6 @@ Ext.onReady(function () {
             store: userStore,
         })],
         emptyText: 'No Matching Records',
-        listeners: {
-            edit: function(editor, e) {
-                console.log('Edit event fired');
-                //e.record.commit();
-            }
-        }
     });
 
     // add some buttons to bottom toolbar just for demonstration purposes
@@ -381,7 +360,7 @@ Ext.onReady(function () {
         items: grid
     }).show();
 
-    //
+    // загрузка хранилищ
     cityStore.load();
     educationStore.load();
     userStore.load();
